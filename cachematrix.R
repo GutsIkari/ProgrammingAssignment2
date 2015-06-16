@@ -1,15 +1,38 @@
-## Put comments here that give an overall description of what your
-## functions do
+## The purpose of makeCacheMatrix() is to be able to  
+## produce a matrix which is able to cache it's own  
+## inverse and to define functions which will allow   
+## cacheSolve() to either reproduce the inverses, or to
+## simply calculate them if the inverse is defined as NULL
 
-## Write a short comment describing this function
+## makeCacheMatrix() will create a matrix which will cache 
+## the inverse of it's values. It will define functions
+## to set and get the matrix and the inverse which can
+## be used by the cacheSolve() function 
 
 makeCacheMatrix <- function(x = matrix()) {
-
+  inv<- NULL
+  set<- function(y) {
+    x <<- y
+    inv <<- NULL
+  }
+  get<- function() x
+  setinv<- function(inverse) inv <<- inverse 
+  getinv<- function() inv
+  list(set=set, get=get, setinv=setinv, getinv=getinv)
 }
 
-
-## Write a short comment describing this function
+## cacheSolve() will either retrieve the inverse cached by
+## makeCacheMatrix utilising lexical scoping, or it will
+## calculate the inverse and return it
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  inv<- x$getinv()
+  if (!is.null(inv)){
+    message("getting cached data")
+    return(inv)
+  }
+  mat.data<- x$get()
+  inv<- solve(mat.data, ...)
+  x$setinv(inv)
+  return(inv)
 }
